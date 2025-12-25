@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "password is required"],
-    minLength: [6, "password can't be less than 6 chars"],
+    minLength: [8, "password can't be less than 8 chars"],
     select: false,
   },
 
@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ username: 1 }, { unique: true });
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;

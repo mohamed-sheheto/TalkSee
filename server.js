@@ -2,6 +2,8 @@ require("dotenv").config({ quiet: true, path: "./.env" });
 
 const app = require("./app");
 const mongoose = require("mongoose");
+const socket = require("socket.io");
+const socketHandler = require("./controllers/socketHandler");
 
 const port = process.env.PORT || 8000;
 const URI = process.env.MONGO_URI;
@@ -20,11 +22,22 @@ mongoose
     server = app.listen(port, () => {
       console.log(`App is running on port ${port}`);
     });
+
+    const io = socket(server, {
+      cors: {
+        origin: "http://localhost:3000",
+        credentials: true,
+      },
+    });
+
+    socketHandler(io);
   })
   .catch((err) => {
     console.error("Database connection failed", err);
     process.exit(1);
   });
+
+module.exports = server;
 
 const gracefulShutdown = (signal) => {
   console.log(`${signal} received. Starting graceful shutdown...`);
