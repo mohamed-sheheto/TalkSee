@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const passport = require("passport");
 const cors = require("cors");
 const authRouter = require("./routes/authRoutes");
+const roomRoutes = require("./routes/roomRoutes");
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/rooms", roomRoutes);
 
 app.use((req, res, next) => {
   const err = new Error(`cannot find ${req.originalUrl} on this server`);
