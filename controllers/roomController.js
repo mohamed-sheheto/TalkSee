@@ -61,10 +61,7 @@ exports.getRoom = asyncWrapper(async function (req, res, next) {
   const room = await Room.findById(req.params.id);
 
   if (!room) {
-    return res.status(404).json({
-      status: "error",
-      message: "Room not found",
-    });
+    return next("invalid id, Room not found", 404);
   }
 
   if (room.isPrivate) {
@@ -73,10 +70,7 @@ exports.getRoom = asyncWrapper(async function (req, res, next) {
     );
 
     if (!isMember) {
-      return res.status(403).json({
-        status: "error",
-        message: "You do not have access to this private room",
-      });
+      return next("You do not have access to this private room", 403);
     }
   }
 
@@ -89,17 +83,11 @@ exports.getRoom = asyncWrapper(async function (req, res, next) {
 exports.deleteRoom = asyncWrapper(async function (req, res, next) {
   const room = await Room.findById(req.params.id);
   if (!room) {
-    return res.status(404).json({
-      status: "error",
-      message: "Room not found",
-    });
+    return next("invalid id, Room not found", 404);
   }
 
   if (!room.creator._id.equals(req.user._id)) {
-    return res.status(403).json({
-      status: "error",
-      message: "You can't delete this room",
-    });
+    return next("You can't delete this room", 403);
   }
 
   await Room.deleteOne({ _id: room._id });
@@ -110,10 +98,7 @@ exports.joinRoom = asyncWrapper(async function (req, res, next) {
   const roomToJoin = await Room.findById(req.params.id);
 
   if (!roomToJoin) {
-    return res.status(404).json({
-      status: "error",
-      message: "Room not found",
-    });
+    return next("Room not found", 404);
   }
 
   if (roomToJoin.isPrivate) {
@@ -130,9 +115,7 @@ exports.joinRoom = asyncWrapper(async function (req, res, next) {
   );
 
   if (!room) {
-    return res
-      .status(404)
-      .json({ status: "error", message: "Room not found during update." });
+    return next("Room not found during update.", 404);
   }
 
   res.status(200).json({
@@ -145,10 +128,7 @@ exports.joinRoom = asyncWrapper(async function (req, res, next) {
 exports.leaveRoom = asyncWrapper(async function (req, res, next) {
   const roomToLeave = await Room.findById(req.params.id);
   if (!roomToLeave) {
-    return res.status(404).json({
-      status: "error",
-      message: "Room not found",
-    });
+    return next("Room not found", 404);
   }
 
   if (roomToLeave.creator._id.equals(req.user._id)) {
